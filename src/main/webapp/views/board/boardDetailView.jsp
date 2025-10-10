@@ -8,7 +8,6 @@
 	<title>게시글 상세보기</title>
 
 	<style>
-
 		.board-container {
 			max-width: 1000px;
 			margin: 50px auto;
@@ -37,8 +36,7 @@
 			margin-bottom: 2rem;
 		}
 
-		.detail-table th,
-		.detail-table td {
+		.detail-table th, .detail-table td {
 			padding: 1rem;
 			border: 1px solid #e0e0e0;
 		}
@@ -49,10 +47,6 @@
 			color: #555;
 			width: 120px;
 			text-align: center;
-		}
-
-		.detail-table td {
-			background-color: white;
 		}
 
 		.content-area {
@@ -80,8 +74,7 @@
 			border-collapse: collapse;
 		}
 
-		.reply-table th,
-		.reply-table td {
+		.reply-table th, .reply-table td {
 			padding: 1rem;
 			border: 1px solid #e0e0e0;
 		}
@@ -90,28 +83,19 @@
 			background-color: #f8f9fa;
 		}
 
-		.reply-table thead th {
-			font-weight: 500;
-			color: #555;
-			text-align: center;
-		}
-
 		.reply-table textarea {
 			width: 100%;
 			padding: 0.5rem;
 			border: 1px solid #ddd;
 			border-radius: 4px;
 			font-size: 0.95rem;
-			font-family: "Noto Sans KR", sans-serif;
 			resize: none;
 		}
 
 		.reply-table tbody td {
-			text-align: center;
-		}
-
-		.reply-table tbody tr:hover {
-			background-color: #f8f9fa;
+			text-align: left;
+			vertical-align: top;
+			padding: 0.5rem;
 		}
 
 		.reply-btn {
@@ -121,71 +105,112 @@
 		}
 	</style>
 </head>
-<body onload="init(${board.boardNo})">
-    <jsp:include page="/views/common/menubar.jsp" />
+<body>
+<jsp:include page="/views/common/menubar.jsp" />
 
-    <div class="board-container">
-        <div class="board-card">
-            <h2>일반게시글 상세보기</h2>
+<div class="board-container">
+	<!-- 게시글 상세 -->
+	<div class="board-card">
+		<h2>일반게시글 상세보기</h2>
+		<table class="detail-table">
+			<tr>
+				<th>카테고리</th>
+				<td>${board.categoryName}</td>
+				<th>제목</th>
+				<td colspan="3">${board.boardTitle}</td>
+			</tr>
+			<tr>
+				<th>작성자</th>
+				<td>${board.boardWriterName}</td>
+				<th>작성일</th>
+				<td>${board.createDate}</td>
+			</tr>
+			<tr>
+				<th>내용</th>
+				<td colspan="3">
+					<div class="content-area">
+						${board.boardContent}
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<th>첨부파일</th>
+				<td colspan="3">첨부파일이 없습니다.</td>
+			</tr>
+		</table>
+		<div class="button-group">
+			<a class="btn btn-primary" href="${pageContext.request.contextPath}/list.bo">목록가기</a>
+			<c:if test="${loginUserNo == board.boardWriter}">
+				<a class="btn btn-warning" href="${pageContext.request.contextPath}/updateForm.bo?boardNo=${board.boardNo}">수정하기</a>
+				<a class="btn btn-danger" href="${pageContext.request.contextPath}/delete.bo?boardNo=${board.boardNo}" onclick="return confirm('정말 삭제하시겠습니까?');">삭제하기</a>
+			</c:if>
+		</div>
+	</div>
 
-            <table class="detail-table">
-                <tr>
-                    <th>카테고리</th>
-                    <td>${board.categoryName}</td>
-                    <th>제목</th>
-                    <td colspan="3">${board.boardTitle}</td>
-                </tr>
-                <tr>
-                    <th>작성자</th>
-                    <td>${board.boardWriterName}</td>
-                    <th>작성일</th>
-                    <td>${board.createDate}</td>
-                </tr>
-                <tr>
-                    <th>내용</th>
-                    <td colspan="3">
-                        <div class="content-area">
-                            ${board.boardContent}
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>첨부파일</th>
-                    <td colspan="3">
-                        첨부파일이 없습니다.
-                    </td>
-                </tr>
-            </table>
+	<!-- 댓글 섹션 -->
+	<div class="reply-section">
+		<table class="reply-table">
+			<thead>
+				<tr>
+					<th width="120">댓글작성</th>
+					<td><textarea id="reply-content" cols="50" rows="3"></textarea></td>
+					<td width="100"><button class="btn btn-primary reply-btn" onclick="insertReply()">댓글등록</button></td>
+				</tr>
+			</thead>
+			<tbody id="reply-list">
+				<!-- 댓글 목록 AJAX로 로딩 -->
+			</tbody>
+		</table>
+	</div>
+</div>
 
-            <div class="button-group">
-			    <a class="btn btn-primary" href="${pageContext.request.contextPath}/list.bo">목록가기</a>
-			
-			    <c:if test="${loginUserNo == board.boardWriter}">
-			        <a class="btn btn-warning" href="${pageContext.request.contextPath}/updateForm.bo?boardNo=${board.boardNo}">수정하기</a>
-			        <a class="btn btn-danger" href="${pageContext.request.contextPath}/delete.bo?boardNo=${board.boardNo}" onclick="return confirm('정말 삭제하시겠습니까?');">삭제하기</a>
-			    </c:if>
-			</div>
+<script>
+	const boardNo = "${board.boardNo}";
+	const loginUserNo = "${loginUserNo}";
 
-        </div>
+	// 댓글 등록
+	function insertReply() {
+		const content = document.getElementById("reply-content").value.trim();
+		if(!content) {
+			alert("댓글을 입력하세요.");
+			return;
+		}
 
-        <div class="reply-section">
-            <table class="reply-table">
-                <thead>
-                    <tr>
-                        <th width="120">댓글작성</th>
-                        <td>
-                            <textarea id="reply-content" cols="50" rows="3"></textarea>
-                        </td>
-                        <td width="100">
-                            <button class="btn btn-primary reply-btn" onclick="">댓글등록</button>
-                        </td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- 댓글 목록이 여기에 동적으로 추가됩니다 -->
-                </tbody>
-            </table>
-        </div>
-    </div>
+		const xhr = new XMLHttpRequest();
+		xhr.open("POST", "${pageContext.request.contextPath}/insertReply.re", true);
+		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		xhr.onreadystatechange = function() {
+			if(xhr.readyState === 4 && xhr.status === 200) {
+				if(xhr.responseText.trim() === "1") { // 성공시 1 반환
+					document.getElementById("reply-content").value = "";
+					loadReplies();
+				} else {
+					alert("댓글 등록 실패");
+				}
+			}
+		};
+		xhr.send("refBno=" + boardNo + "&replyWriter=" + loginUserNo + "&replyContent=" + encodeURIComponent(content));
+	}
+
+	// 댓글 목록 로드
+	function loadReplies() {
+		const xhr = new XMLHttpRequest();
+		xhr.open("GET", "${pageContext.request.contextPath}/listReply.re?boardNo=" + boardNo, true);
+		xhr.onreadystatechange = function() {
+			if(xhr.readyState === 4 && xhr.status === 200) {
+				const data = JSON.parse(xhr.responseText);
+				let html = "";
+				data.forEach(r => {
+					html += "<tr><td colspan='3'><b>" + r.replyWriterName + "</b>: " + r.replyContent + " (" + r.createDate + ")</td></tr>";
+				});
+				document.getElementById("reply-list").innerHTML = html;
+			}
+		};
+		xhr.send();
+	}
+
+	// 페이지 로드 시 댓글 초기화
+	window.onload = loadReplies;
+</script>
 </body>
 </html>
