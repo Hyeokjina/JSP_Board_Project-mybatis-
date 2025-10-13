@@ -31,8 +31,10 @@ public class BoardEnrollController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if(session == null || session.getAttribute("loginMember") == null) {
-            // 로그인 페이지로 이동
-            response.sendRedirect(request.getContextPath() + "/login.me");
+            
+        	request.setAttribute("errorMsg", "해당기능은 회원가입 및 로그인 후 사용가능합니다.");
+            request.getRequestDispatcher("/views/common/error2.jsp").forward(request, response);
+
             return;
         }
         request.getRequestDispatcher("/views/board/enrollForm.jsp").forward(request, response);
