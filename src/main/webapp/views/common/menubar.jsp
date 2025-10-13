@@ -38,7 +38,8 @@
             padding: 0;
         }
 
-        h1{ padding: 24px 0;}
+        h1{ padding: 24px 0;
+        cursor: pointer;}
 
         .navbar-nav .nav-link {
             font-size: 1.1rem;
@@ -60,7 +61,7 @@
 	</c:if>
 
     <div class="container-fluid">
-        <h1 class="text-center py-4 mb-4 border-bottom">Welcome KH World</h1>
+        <h1 class="text-center py-4 mb-4 border-bottom" id="welcome">Welcome KH World</h1>
 
         <div class="d-flex justify-content-end mb-4">
         <c:choose>
@@ -119,4 +120,9 @@
         </div>
     </nav>
 </body>
+<script>
+    document.getElementById("welcome").addEventListener("click", function(){
+        location.href = "${pageContext.request.contextPath}";
+    });
+</script>
 </html>

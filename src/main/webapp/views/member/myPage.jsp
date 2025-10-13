@@ -181,7 +181,9 @@
 
 				<!-- Modal body -->
 				<div class="modal-body">
-					<form action="${pageContext.request.contextPath}/updatePwd.me" method="post">
+					<form action="${pageContext.request.contextPath}/updatePwd.me" method="post" onsubmit="return checkPwd();">
+					<!-- 비밀번호입력과 확인이 다른데 왜 함수가 제대로 작동안하는가?
+						 회원가입 과정에서는 정상 작동하는데? -->
 						<div class="mb-3">
 							<label for="currentPwd" class="form-label">현재 비밀번호</label>
 							<input type="password" class="form-control" id="currentPwd" name="userPwd" required>
@@ -197,9 +199,7 @@
 						<div class="d-grid">
 							<button id="edit-pwd-btn" type="submit" class="btn btn-primary">비밀번호 변경</button>
 						</div>
-					</form>
-
-			
+					</form>	
 				</div>
 			</div>
 		</div>
@@ -234,5 +234,23 @@
 			</div>
 		</div>
 	</div>
+	
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+		    const pwdForm = document.querySelector("#update-pwd-modal form");
+		
+		    pwdForm.addEventListener("submit", function(e) {
+		        const newPwd = document.getElementById("newPwd").value;
+		        const checkPwd = document.getElementById("checkPwd").value;
+		
+		        if(newPwd !== checkPwd) {
+		            e.preventDefault();
+		            alert("변경하신 비밀번호가 일치하지 않습니다.");
+		            return false;
+		        }
+		    });
+		});
+</script>
+
 </body>
 </html>
