@@ -9,12 +9,25 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 
+/**
+ * Servlet implementation class BoardDetailController
+ */
 @WebServlet("/detail.bo")
 public class BoardDetailController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private final BoardService service = new BoardService();
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public BoardDetailController() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
-    @Override
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String boardNoStr = request.getParameter("boardNo");
 
@@ -24,7 +37,7 @@ public class BoardDetailController extends HttpServlet {
         }
 
         int boardNo = Integer.parseInt(boardNoStr);
-        int result = service.increaseReadCount(boardNo);
+        service.increaseReadCount(boardNo); // 조회수 증가
         Board board = service.selectBoard(boardNo);
 
         if(board == null) {
@@ -44,4 +57,11 @@ public class BoardDetailController extends HttpServlet {
         request.getRequestDispatcher("/views/board/boardDetailView.jsp").forward(request, response);
     }
 
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // TODO Auto-generated method stub
+        doGet(request, response);
+    }
 }

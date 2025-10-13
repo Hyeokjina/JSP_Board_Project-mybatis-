@@ -9,12 +9,25 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 
+/**
+ * Servlet implementation class BoardUpdateFormController
+ */
 @WebServlet("/updateForm.bo")
 public class BoardUpdateFormController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private final BoardService service = new BoardService();
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public BoardUpdateFormController() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
-    @Override
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if(session == null || session.getAttribute("loginMember") == null) {
@@ -40,5 +53,12 @@ public class BoardUpdateFormController extends HttpServlet {
 
         request.setAttribute("board", board);
         request.getRequestDispatcher("/views/board/boardUpdateForm.jsp").forward(request, response);
+    }
+
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
     }
 }

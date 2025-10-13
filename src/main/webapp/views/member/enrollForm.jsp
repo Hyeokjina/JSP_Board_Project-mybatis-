@@ -38,7 +38,7 @@
     <div class="container">
         <div class="form-container">
             <h2 class="text-center mb-4">회원가입</h2>
-            <form id="signupForm" action="<c:url value='/insert.me'/>" method="post" onsubmit="return checkPwd()">
+            <form id="signupForm" action="${pageContext.request.contextPath}/insert.me" method="post" onsubmit="return checkPwd()">
                 
                 <!-- 아이디 입력 + 중복확인 -->
                 <div class="row form-row">
@@ -113,6 +113,6 @@
         }
         return true;
     }
-</script>
+    </script>
 </body>
 </html>
