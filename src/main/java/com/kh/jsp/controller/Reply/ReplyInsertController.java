@@ -9,21 +9,32 @@ import java.io.IOException;
 
 @WebServlet("/insertReply.re")
 public class ReplyInsertController extends HttpServlet {
-	private ReplyService service = new ReplyService();
+    private ReplyService service = new ReplyService();
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		int refBno = Integer.parseInt(request.getParameter("refBno"));
-		int replyWriter = Integer.parseInt(request.getParameter("replyWriter"));
-		String content = request.getParameter("replyContent");
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String refBnoStr = request.getParameter("refBno");
+        String replyWriterStr = request.getParameter("replyWriter");
+        String content = request.getParameter("replyContent");
 
-		Reply r = new Reply();
-		r.setRefBno(refBno);
-		r.setReplyWriter(replyWriter);
-		r.setReplyContent(content);
+        if (refBnoStr == null || refBnoStr.isEmpty() ||
+            replyWriterStr == null || replyWriterStr.isEmpty() ||
+            content == null || content.trim().isEmpty()) {
+            response.getWriter().print("0"); // 실패
+            return;
+        }
 
-		int result = service.insertReply(r);
+        int refBno = Integer.parseInt(refBnoStr);
+        int replyWriter = Integer.parseInt(replyWriterStr);
 
-		response.setContentType("text/plain; charset=UTF-8");
-		response.getWriter().print(result); // 1이면 성공, 0이면 실패
-	}
+        Reply r = new Reply();
+        r.setRefBno(refBno);
+        r.setReplyWriter(replyWriter);
+        r.setReplyContent(content);
+
+        int result = service.insertReply(r);
+
+        response.setContentType("text/plain; charset=UTF-8");
+        response.getWriter().print(result); // 1이면 성공, 0이면 실패
+    }
 }
+

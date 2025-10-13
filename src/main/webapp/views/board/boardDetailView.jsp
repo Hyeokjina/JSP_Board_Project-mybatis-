@@ -111,7 +111,7 @@
 <div class="board-container">
     <!-- 게시글 상세 -->
     <div class="board-card">
-        <h2>일반게시글 상세보기</h2>
+        <h2>게시글 상세보기</h2>
         <table class="detail-table">
             <tr>
                 <th>카테고리</th>
@@ -127,11 +127,7 @@
             </tr>
             <tr>
                 <th>내용</th>
-                <td colspan="3">
-                    <div class="content-area">
-                        ${board.boardContent}
-                    </div>
-                </td>
+                <td colspan="3"><div class="content-area">${board.boardContent}</div></td>
             </tr>
             <tr>
                 <th>첨부파일</th>
@@ -147,10 +143,9 @@
         </div>
     </div>
 
+    <!-- 댓글 섹션 -->
     <div class="board-card">
         <h2>댓글 확인</h2>
-
-        <!-- 댓글 섹션 -->
         <div class="reply-section">
             <table class="reply-table">
                 <thead>
@@ -169,35 +164,30 @@
 </div>
 
 <script>
-    const boardNo = "${board.boardNo}";
-    const loginUserNo = "${loginUserNo}";
+    const boardNo = parseInt("${board.boardNo != null ? board.boardNo : 0}");
+    const loginUserNo = parseInt("${loginUserNo != null ? loginUserNo : 0}");
 
-    // 댓글 등록
     function insertReply() {
         const content = document.getElementById("reply-content").value.trim();
-        if(!content) {
-            alert("댓글을 입력하세요.");
-            return;
-        }
+        if(!content) { alert("댓글을 입력하세요."); return; }
+        if(boardNo === 0 || loginUserNo === 0) { alert("게시글 정보 또는 로그인 정보가 올바르지 않습니다."); return; }
 
         const xhr = new XMLHttpRequest();
         xhr.open("POST", "${pageContext.request.contextPath}/insertReply.re", true);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.onreadystatechange = function() {
             if(xhr.readyState === 4 && xhr.status === 200) {
-                if(xhr.responseText.trim() === "1") { // 성공시 1 반환
+                if(xhr.responseText.trim() === "1") {
                     document.getElementById("reply-content").value = "";
                     loadReplies();
-                } else {
-                    alert("댓글 등록 실패");
-                }
+                } else { alert("댓글 등록 실패"); }
             }
         };
         xhr.send("refBno=" + boardNo + "&replyWriter=" + loginUserNo + "&replyContent=" + encodeURIComponent(content));
     }
 
-    // 댓글 목록 로드
     function loadReplies() {
+        if(boardNo === 0) return;
         const xhr = new XMLHttpRequest();
         xhr.open("GET", "${pageContext.request.contextPath}/listReply.re?boardNo=" + boardNo, true);
         xhr.onreadystatechange = function() {
@@ -213,7 +203,6 @@
         xhr.send();
     }
 
-    // 페이지 로드 시 댓글 초기화
     window.onload = loadReplies;
 </script>
 </body>

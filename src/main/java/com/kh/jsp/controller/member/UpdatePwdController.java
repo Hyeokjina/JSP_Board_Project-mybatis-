@@ -38,11 +38,6 @@ public class UpdatePwdController extends HttpServlet {
 		HttpSession session = request.getSession();
 		Member loginMember = (Member)session.getAttribute("loginMember");
 		
-		if(loginMember == null || !loginMember.getMemberPwd().equals(userPwd)) {
-			request.setAttribute("errorMsg", "정상적인 접근이 아닙니다.");
-			request.getRequestDispatcher("views/common/error.jsp").forward(request, response);
-			return;
-		}
 		
 		Member updateMember = new MemberService().updateMemberPwd(loginMember.getMemberId(), updatePwd);
 		if(updateMember == null) { //업데이트 실패
