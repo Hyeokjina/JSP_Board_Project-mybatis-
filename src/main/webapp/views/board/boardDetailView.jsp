@@ -150,7 +150,7 @@
 
     <div class="board-container">
         <div class="board-card">
-            <h2>일반게시글 내용보기</h2>
+            <h2>댓글 확인</h2>
 
 
 	<!-- 댓글 섹션 -->
