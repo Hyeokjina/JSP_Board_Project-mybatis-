@@ -108,6 +108,7 @@
 <body>
 <jsp:include page="/views/common/menubar.jsp" />
 
+<<<<<<< HEAD
 <div class="board-container">
 	<!-- 게시글 상세 -->
 	<div class="board-card">
@@ -146,6 +147,11 @@
 			</c:if>
 		</div>
 	</div>
+=======
+    <div class="board-container">
+        <div class="board-card">
+            <h2>일반게시글 내용보기</h2>
+>>>>>>> 200bf813aeffc9755a5f078c7160d5aba28e2b8e
 
 	<!-- 댓글 섹션 -->
 	<div class="reply-section">
