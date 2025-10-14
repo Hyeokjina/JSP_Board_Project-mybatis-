@@ -137,7 +137,7 @@
 								첨부파일이 없습니다.
 							</c:when>
 							<c:otherwise>
-								<a download="${at.originName}"
+								<a download="${at.orginName}"
 									href="${pageContext.request.contextPath}/${at.filePath}${at.changeName}">
 									${at.orginName}
 								</a>

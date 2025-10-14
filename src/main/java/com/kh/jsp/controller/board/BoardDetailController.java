@@ -1,8 +1,10 @@
 package com.kh.jsp.controller.board;
 
+import com.kh.jsp.model.vo.Attachment;
 import com.kh.jsp.model.vo.Board;
 import com.kh.jsp.model.vo.Member;
 import com.kh.jsp.service.BoardService;
+import com.kh.jsp.service.AttachmentService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -45,15 +47,20 @@ public class BoardDetailController extends HttpServlet {
             request.getRequestDispatcher("/views/common/error.jsp").forward(request, response);
             return;
         }
-
+        
+        AttachmentService aService = new AttachmentService();
+        Attachment at = aService.selectAttachment(boardNo);
+        
         HttpSession session = request.getSession(false);
         Integer loginUserNo = null;
         if(session != null && session.getAttribute("loginMember") != null) {
             loginUserNo = ((Member) session.getAttribute("loginMember")).getMemberNo();
         }
 
+        
         request.setAttribute("board", board);
         request.setAttribute("loginUserNo", loginUserNo); // JSP에서 작성자 비교용
+        request.setAttribute("at", at);
         request.getRequestDispatcher("/views/board/boardDetailView.jsp").forward(request, response);
     }
 
