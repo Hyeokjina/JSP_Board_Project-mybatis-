@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.util.List;
 
 import com.kh.jsp.model.dao.BoardDao;
+import com.kh.jsp.model.vo.Attachment;
 import com.kh.jsp.model.vo.Board;
 
 public class BoardService {
@@ -25,9 +26,16 @@ public class BoardService {
         return board;
     }
 
-    public int insertBoard(Board board) {
+    public int insertBoard(Board board, Attachment at) {
         Connection conn = getConnection();
+        BoardDao bDao = new BoardDao();
         int result = dao.insertBoard(board, conn);
+        
+        
+        if(at != null) {
+        	result *= bDao.insertAttachement(at, conn);
+        }
+        
         if(result > 0) commit(conn);
         else rollback(conn);
         close(conn);

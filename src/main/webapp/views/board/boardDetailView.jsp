@@ -131,7 +131,19 @@
             </tr>
             <tr>
                 <th>첨부파일</th>
-                <td colspan="3">첨부파일이 없습니다.</td>
+					<td colspan="3">
+						<c:choose>
+							<c:when test="${empty at}">
+								첨부파일이 없습니다.
+							</c:when>
+							<c:otherwise>
+								<a download="${at.originName}"
+									href="${pageContext.request.contextPath}/${at.filePath}${at.changeName}">
+									${at.orginName}
+								</a>
+							</c:otherwise>
+						</c:choose>
+					</td>
             </tr>
         </table>
         <div class="button-group">

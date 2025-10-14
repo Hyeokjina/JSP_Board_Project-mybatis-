@@ -6,6 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kh.jsp.model.vo.Attachment;
 import com.kh.jsp.model.vo.Board;
 
 public class BoardDao {
@@ -108,6 +109,22 @@ public class BoardDao {
         }
         return 0;
     }
+    
+    public int insertAttachement(Attachment at, Connection conn) {
+        String sql = "INSERT INTO ATTACHMENT (FILE_NO, REF_BNO, ORIGIN_NAME, CHANGE_NAME, FILE_PATH)"
+                   + "VALUES (SEQ_FNO.NEXTVAL, SEQ_BNO.CURRVAL, ?, ?, ?)";
+        try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, at.getOrginName());
+            pstmt.setString(2, at.getChangeName());
+            pstmt.setString(3,  at.getFilePath());
+         
+            return pstmt.executeUpdate();
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    
     public int deleteBoard(Connection conn, int boardNo) {
         String sql = "UPDATE BOARD SET STATUS = 'N' WHERE BOARD_NO = ?";
         try(PreparedStatement pstmt = conn.prepareStatement(sql)) {

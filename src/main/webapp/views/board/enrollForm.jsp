@@ -78,7 +78,18 @@
 <div class="board-container">
     <div class="board-card">
         <h2>게시글 작성</h2>
-        <form action="<c:url value='/enroll.bo'/>" method="post">
+        <%--
+        	파일을 전송하기 위해서는 fomr태그에 enctype="mulipart/form-data"속성을 추가해야한다.
+         	기본적인 form 전송시 인코딩 타입 -> application/x-www-form-urlencoded
+         	-> 이방식은 모든 데이터를 문자열로 인코딩해서 한줄의 텍스트로 전달
+         	
+         	파일 업로드시 위의 방식대로 모든 데이터를 문자열로 변경시
+         	파일의 바이너리 형태의 데이터로 url인코딩 방식으로 변경하게 된다.
+         	이때 데이터가 너무 커지고, 이 과정에서 파일이 손상되면 서버가 이를 정상적으로 받아줄수 없다.
+         	파일에 원본 그대로 전달할 수 있는 다른 전송 인코딩 방식을 사용
+         --%>
+        
+        <form action="${pageContext.request.contextPath}/enroll.bo" method="post" enctype="multipart/form-data">
             <table class="form-table">
                 <tr>
                     <th>카테고리</th>
