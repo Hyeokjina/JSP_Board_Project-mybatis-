@@ -79,7 +79,7 @@
     <div class="board-card">
         <h2>게시글 작성</h2>
         <%--
-        	파일을 전송하기 위해서는 fomr태그에 enctype="mulipart/form-data"속성을 추가해야한다.
+        	파일을 전송하기 위해서는 fomr태그에 enctype="multipart/form-data"속성을 추가해야한다.
          	기본적인 form 전송시 인코딩 타입 -> application/x-www-form-urlencoded
          	-> 이방식은 모든 데이터를 문자열로 인코딩해서 한줄의 텍스트로 전달
          	
