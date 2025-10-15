@@ -1,26 +1,23 @@
-package com.kh.jsp.controller.member;
-
-import java.io.IOException;
-
-import com.kh.jsp.service.MemberService;
+package com.kh.jsp.controller.board;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
- * Servlet implementation class AjaxIdCheckController
+ * Servlet implementation class AjaxReplyInsertController
  */
-@WebServlet("/idDulpicateCheck.me")
-public class AjaxIdCheckController extends HttpServlet {
+@WebServlet("/rinsert.bo")
+public class AjaxReplyInsertController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public AjaxIdCheckController() {
+    public AjaxReplyInsertController() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -29,15 +26,7 @@ public class AjaxIdCheckController extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String checkId = request.getParameter("checkId");
-		
-		int count = new MemberService().idCheck(checkId);
-		
-		if(count > 0) { //회원이 존재.
-			response.getWriter().print("NNNNN");
-		} else { //회원이 존재하지 않음.
-			response.getWriter().print("NNNNY");
-		}
+		//보내준 정보를 받아서 Reply 저장 -> int 그대로 반환
 	}
 
 	/**

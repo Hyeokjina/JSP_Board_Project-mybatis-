@@ -3,108 +3,6 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>게시글 상세보기</title>
-
-    <style>
-        .board-container {
-            max-width: 1000px;
-            margin: 50px auto;
-            padding: 2rem;
-        }
-
-        .board-card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .board-card h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #4b89fc;
-        }
-
-        .detail-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 2rem;
-        }
-
-        .detail-table th, .detail-table td {
-            padding: 1rem;
-            border: 1px solid #e0e0e0;
-        }
-
-        .detail-table th {
-            background-color: #f8f9fa;
-            font-weight: 500;
-            color: #555;
-            width: 120px;
-            text-align: center;
-        }
-
-        .content-area {
-            min-height: 200px;
-            padding: 1rem;
-            line-height: 1.6;
-        }
-
-        .button-group {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-top: 2rem;
-        }
-
-        .reply-section {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-        }
-
-        .reply-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .reply-table th, .reply-table td {
-            padding: 1rem;
-            border: 1px solid #e0e0e0;
-        }
-
-        .reply-table thead {
-            background-color: #f8f9fa;
-        }
-
-        .reply-table textarea {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 0.95rem;
-            resize: none;
-        }
-
-        .reply-table tbody td {
-            text-align: left;
-            vertical-align: top;
-            padding: 0.5rem;
-        }
-
-        .reply-btn {
-            width: 100%;
-            height: 100%;
-            min-height: 80px;
-        }
-    </style>
-<head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>게시글 상세보기</title>
@@ -278,73 +176,57 @@
 			</div>
 		</div>
 
-    <!-- 댓글 섹션 -->
-    <div class="board-card">
-        <h2>댓글 확인</h2>
-        <div class="reply-section">
-            <table class="reply-table">
-                <thead>
-                    <tr>
-                        <th width="120">댓글작성</th>
-                        <td><textarea id="reply-content" cols="50" rows="3"></textarea></td>
-                        <td width="100">
-                            <button class="btn btn-primary reply-btn" onclick="insertReply()">댓글등록</button>
-                        </td>
-                    </tr>
-                </thead>
-                <tbody id="reply-list"></tbody>
-            </table>
-        </div>
-    </div>
-</div>
+		<div class="reply-section">
+			<table class="reply-table">
+				<thead>
+					<tr>
+						<th width="120">댓글작성</th>
+						<c:choose>
+							<c:when test="${loginMember != null}">
+								<td>
+									<textarea id="reply-content" cols="50" rows="3"></textarea>
+								</td>
+								<td width="100">
+									<button class="btn btn-primary reply-btn" onclick="insertReply(${board.boardNo})">댓글등록</button>
+								</td>
+							</c:when>
+							<c:otherwise>
+								<td>
+									<textarea cols="50" rows="3" readonly>댓글등록은 로그인이 필요합니다.</textarea>
+								</td>
+								<td width="100">
+									<button class="btn btn-primary reply-btn" disabled>댓글등록</button>
+								</td>
+							</c:otherwise>
+						</c:choose>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- 댓글 목록이 여기에 동적으로 추가됩니다 -->
+				</tbody>
+			</table>
+		</div>
+	</div>
+	
+	<script>
+	 function insertReply(bno){
+		const contentInput = document.querySelector("#reply-content");
 
-<c:set var="loginUserNo" value="${loginMember != null ? loginMember.memberNo : 0}" />
-
-<script>
-const boardNo = parseInt("${board.boardNo != null ? board.boardNo : 0}");
-const loginUserNo = parseInt("${loginUserNo}");
-
-function insertReply() {
-    const content = document.getElementById("reply-content").value.trim();
-    if(!content) { alert("댓글을 입력하세요."); return; }
-    if(isNaN(boardNo) || isNaN(loginUserNo) || loginUserNo === 0) {
-        alert("게시글 정보 또는 로그인 정보가 올바르지 않습니다."); 
-        return; 
-    }
-
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", "${pageContext.request.contextPath}/insertReply.re", true);
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xhr.onreadystatechange = function() {
-        if(xhr.readyState === 4 && xhr.status === 200){
-            if(xhr.responseText.trim() === "1"){
-                document.getElementById("reply-content").value = "";
-                loadReplies();
-            } else { alert("댓글 등록 실패"); }
-        }
-    };
-    xhr.send("refBno=" + boardNo + "&replyWriter=" + loginUserNo + "&replyContent=" + encodeURIComponent(content));
-}
-
-function loadReplies() {
-    if(isNaN(boardNo) || boardNo === 0) return;
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", "${pageContext.request.contextPath}/listReply.re?boardNo=" + boardNo, true);
-    xhr.onreadystatechange = function() {
-        if(xhr.readyState === 4 && xhr.status === 200) {
-            const data = JSON.parse(xhr.responseText);
-            let html = "";
-            data.forEach(r => {
-                html += "<tr><td colspan='3'><b>" + r.replyWriterName + "</b>: " + r.replyContent + 
-                        " (" + r.createDate + ")</td></tr>";
-            });
-            document.getElementById("reply-list").innerHTML = html;
-        }
-    };
-    xhr.send();
-}
-
-window.onload = loadReplies;
-</script>
+		 $.ajax({
+			 url: "rinsert.bo",
+			 type: "post",
+			 data: {
+				boardNo : bno,
+				content: contentInput.value
+			 },
+			 success: function(res){
+				console.log("응답 : ", res);
+			 },
+			 error: function(err){
+				console.log("댓글 작성 ajax 실패");
+			 }
+		 })
+	 }
+	</script>
 </body>
 </html>

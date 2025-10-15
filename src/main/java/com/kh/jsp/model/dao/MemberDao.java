@@ -206,6 +206,33 @@ public class MemberDao {
 		
 		return result;
 	}
+	
+	public int idCheck(Connection conn, String checkId) {
+		//select -> 동일한 ID로 가입된 멤버 수 -> ResultSet(count)
+		int count = 0;
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String sql = prop.getProperty("idCheck");
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, checkId);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				count = rset.getInt("COUNT");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rset);
+			close(pstmt);
+		}
+		
+		return count;
+	}
 }
 
 
