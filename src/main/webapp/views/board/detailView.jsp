@@ -208,6 +208,8 @@
 		</div>
 	</div>
 	
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+	
 	<script>
 	 function insertReply(bno){
 		const contentInput = document.querySelector("#reply-content");
@@ -227,6 +229,6 @@
 			 }
 		 })
 	 }
-	</script>
+	</script>	
 </body>
 </html>
