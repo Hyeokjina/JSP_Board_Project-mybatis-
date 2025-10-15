@@ -78,8 +78,4 @@
 			   MODIFY_DATE = SYSDATE
 		 WHERE MEMBER_ID = ?
 	</entry>
-	<entry key="checkUserId">
-		SELECT COUNT(*) FROM MEMBER WHERE USER_ID = ?
-	</entry>
-	
 </properties>

@@ -58,7 +58,7 @@ public class InsertController extends HttpServlet {
 			response.sendRedirect(request.getContextPath());
 		} else { //가입실패
 			request.setAttribute("errorMsg", "회원가입에 실패하였습니다.");
-			request.getRequestDispatcher("views/common/error.jsp");
+			request.getRequestDispatcher("views/common/error.jsp").forward(request, response);
 		}
 	}
 

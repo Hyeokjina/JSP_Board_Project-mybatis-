@@ -1,73 +1,127 @@
 package com.kh.jsp.service;
 
-import static com.kh.jsp.common.JDBCTemplate.*;
+import static com.kh.jsp.common.JDBCTemplate.close;
+import static com.kh.jsp.common.JDBCTemplate.commit;
+import static com.kh.jsp.common.JDBCTemplate.getConnection;
+import static com.kh.jsp.common.JDBCTemplate.rollback;
 
 import java.sql.Connection;
-import java.util.List;
+import java.util.ArrayList;
 
+import com.kh.jsp.common.vo.PageInfo;
 import com.kh.jsp.model.dao.BoardDao;
 import com.kh.jsp.model.vo.Attachment;
 import com.kh.jsp.model.vo.Board;
+import com.kh.jsp.model.vo.Category;
 
 public class BoardService {
-    private final BoardDao dao = new BoardDao();
-
-    public List<Board> selectBoardList() {
-        Connection conn = getConnection();
-        List<Board> list = dao.selectBoardList(conn);
-        close(conn);
-        return list;
-    }
-
-    public Board selectBoard(int boardNo) {
-        Connection conn = getConnection();
-        Board board = dao.selectBoard(conn, boardNo);
-        close(conn);
-        return board;
-    }
-
-    public int insertBoard(Board board, Attachment at) {
-        Connection conn = getConnection();
-        BoardDao bDao = new BoardDao();
-        int result = dao.insertBoard(board, conn);
-        
-        
-        if(at != null) {
-        	result *= bDao.insertAttachement(at, conn);
-        }
-        
-        if(result > 0) commit(conn);
-        else rollback(conn);
-        close(conn);
-        return result;
-    }
-
-    public int increaseReadCount(int boardNo) {
-        Connection conn = getConnection();
-        int result = dao.updateReadCount(conn, boardNo);
-        if(result > 0) commit(conn);
-        else rollback(conn);
-        close(conn);
-        return result;
-    }
-    
-    public int deleteBoard(int boardNo) {
-        Connection conn = getConnection();
-        int result = dao.deleteBoard(conn, boardNo);
-        if(result > 0) commit(conn);
-        else rollback(conn);
-        close(conn);
-        return result;
-    }
-    
-    public int updateBoard(Board board) {
-        Connection conn = getConnection();
-        int result = dao.updateBoard(conn, board);
-        if(result > 0) commit(conn);
-        else rollback(conn);
-        close(conn);
-        return result;
-    }
-
+	
+	public int selectAllBoardCount(){
+		Connection conn = getConnection();
+		
+		int listCount = new BoardDao().selectAllBoardCount(conn);
+		close(conn);
+		
+		return listCount;
+	}
+	
+	public ArrayList<Board> selectAllBoard(PageInfo pi){
+		Connection conn = getConnection();
+		
+		ArrayList<Board> list = new BoardDao().selectAllBoard(conn, pi);
+		close(conn);
+		
+		return list;
+	}
+	
+	public int increaseCount(int boardNo) {
+		Connection conn = getConnection();
+		
+		int result = new BoardDao().increaseCount(conn, boardNo);
+		if(result > 0) {
+			commit(conn);
+		} else {
+			rollback(conn);
+		}
+		
+		close(conn);
+		return result;
+	}
+	
+	public Board selectBoardByBoardNo(int boardNo) {
+		Connection conn = getConnection();
+		
+		Board board = new BoardDao().selectBoardByBoardNo(conn, boardNo);
+	
+		close(conn);
+		return board;
+	}
+	
+	public Attachment selectAttachment(int boardNo) {
+		Connection conn = getConnection();
+		
+		Attachment at = new BoardDao().selectAttachment(conn, boardNo);
+		
+		close(conn);
+		return at;
+	}
+	
+	public ArrayList<Category> selectAllCategory() {
+		Connection conn = getConnection();
+		
+		ArrayList<Category> categroyList = new BoardDao().selectAllCategory(conn);
+	
+		close(conn);
+		return categroyList;
+	}
+	
+	public int updateBoard(Board b, Attachment at) {
+		//새로운 첨부파일이 존재하지 않을 때  -> (b, null) -> board update
+		//새로운 첨부파일이 존재하고 기존첨부파일이 존재할 때 -> (b, at(fileNo)) -> board update, attachment update
+		//새로운 첨부파일이 존재하고 기존첨부파일이 존재하지 않을 때 -> (b, at(refBoardNo)) -> board update, attachment insert
+	
+		Connection conn = getConnection();
+		BoardDao boardDao = new BoardDao();
+		
+		int result = boardDao.updateBoard(conn, b);
+		
+		if(at != null) {
+			if(at.getFileNo() != 0) { //기존첨부파일이 존재할 때
+				result *= boardDao.updateAttachment(conn, at);
+			} else { //기존첨부파일이 존재하지 않을 때
+				result *= boardDao.insertNewAttachment(conn, at);
+			}
+		}
+		
+		if(result > 0) {
+			commit(conn);
+		} else {
+			rollback(conn);
+		}
+		
+		close(conn);
+		return result;
+	}
+	
+	public int insertBoard(Board b, Attachment at) {
+		Connection conn = getConnection();
+		
+		BoardDao bDao = new BoardDao();
+		
+		int result = bDao.insertBoard(conn, b);
+		
+		if(at != null) {
+			result *= bDao.insertAttachment(conn, at);
+		}
+		
+		if(result > 0) {
+			commit(conn);
+		} else {
+			rollback(conn);
+		}
+		
+		close(conn);
+		return result;
+	}
 
 }
