@@ -1,136 +1,145 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>게시글 작성</title>
-
-	<style>
-		.board-container {
-			max-width: 800px;
-			margin: 50px auto;
-			padding: 2rem;
-		}
-
-		.board-card {
-			background: white;
-			border-radius: 8px;
-			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-			padding: 2rem;
-		}
-
-		.board-card h2 {
-			text-align: center;
-			color: #333;
-			margin-bottom: 2rem;
-			padding-bottom: 1rem;
-			border-bottom: 2px solid #4b89fc;
-		}
-
-		.form-table {
-			width: 100%;
-			margin-bottom: 2rem;
-		}
-
-		.form-table tr {
-			border-bottom: 1px solid #f0f0f0;
-		}
-
-		.form-table th {
-			width: 120px;
-			padding: 1rem;
-			font-weight: 500;
-			color: #555;
-			text-align: left;
-			vertical-align: top;
-		}
-
-		.form-table td {
-			padding: 1rem;
-		}
-
-		.form-table select,
-		.form-table input[type="text"],
-		.form-table textarea,
-		.form-table input[type="file"] {
-			width: 100%;
-			padding: 0.5rem;
-			border: 1px solid #ddd;
-			border-radius: 4px;
-			font-size: 0.95rem;
-			font-family: "Noto Sans KR", sans-serif;
-		}
-
-		.form-table textarea {
-			resize: none;
-		}
-
-		.button-group {
-			display: flex;
-			justify-content: center;
-			gap: 0.5rem;
-			margin-top: 2rem;
-		}
-	</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 2rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .form-row {
+            margin-bottom: 1rem;
+        }
+        .interest-section {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid #dee2e6;
+        }
+        .interest-section .form-check {
+            display: inline-block;
+            margin-right: 1rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
 </head>
 <body>
-	<jsp:include page="/views/common/menubar.jsp" />
+<jsp:include page="/views/common/menubar.jsp" />
 
-	<div class="board-container">
-		<div class="board-card">
-			<h2>일반게시글 작성하기</h2>
-			
-			<%--
-				파일을 전송하기 위해서는 form태그에 enctype="mulipart/form-data"속성을 추가해야한다.
-				기본적인 form 전송시 인코딩 타입 -> application/x-www-form-urlencoded
-				-> 이 방식은 모든 데이터를 문자열로 인코딩해서 한줄의 텍스트로 전달
-				
-				파일업로드시 위의 방식대로 모든 데이터를 문자열로 변경시
-				파일의 바이너리 형태의 데이터도 url인코딩 방식으로 변경하게 된다.
-				이때 데이터가 너무 커지고, 이과정에서 파일이 손상되면 서버가 이를 정상적으로 받아줄 수 없다
-				그래서 파일의 원본 그대로 전달할 수 있는 다른 전송 인코딩 방식을 사용 
-			 --%>
+<div class="form-container">
+    <h2 class="text-center mb-4">회원가입</h2>
+    <form id="enroll-form" action="${pageContext.request.contextPath}/insert.me" method="post">
+        <div class="form-row">
+            <input type="text" name="userId" placeholder="아이디 입력..." required>
+            <button type="button" onclick="idDulpicateCheck()">중복확인</button>
+        </div>
 
-			<form action="${pageContext.request.contextPath}/insert.bo" method="post" enctype="multipart/form-data" >
-				<table class="form-table">
-					<tr>
-						<th>카테고리</th>
-						<td>
-							<select name="category">	
-								<c:forEach var="c" items="${categories}">
-									<option value="${c.categoryNo}">${c.categoryName}</option>
-								</c:forEach>					
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<th>제목</th>
-						<td>
-							<input type="text" name="title" required>
-						</td>
-					</tr>
-					<tr>
-						<th>내용</th>
-						<td>
-							<textarea name="content" rows="10"></textarea>
-						</td>
-					</tr>
-					<tr>
-						<th>첨부파일</th>
-						<td>
-							<input type="file" name="upfile">
-						</td>
-					</tr>
-				</table>
+        <div class="form-row">
+            <input type="password" name="userPwd" placeholder="비밀번호 입력..." required>
+        </div>
+        <div class="form-row">
+            <input type="password" placeholder="비밀번호 확인..." required>
+        </div>
+        <div class="form-row">
+            <input type="text" name="userName" placeholder="이름 입력..." required>
+        </div>
+        <div class="form-row">
+            <input type="text" name="phone" placeholder="전화번호 입력...">
+        </div>
+        <div class="form-row">
+            <input type="email" name="email" placeholder="이메일 입력...">
+        </div>
+        <div class="form-row">
+            <input type="text" name="address" placeholder="주소 입력...">
+        </div>
 
-				<div class="button-group">
-					<button type="submit" class="btn btn-primary">작성하기</button>
-					<button type="reset" class="btn btn-secondary">취소하기</button>
-				</div>
-			</form>
-		</div>
-	</div>
+        <div class="form-row">
+            <label>관심분야</label>
+            <div class="interest-section">
+                <div class="form-check">
+                    <input type="checkbox" name="interest" value="sports" id="sports">
+                    <label for="sports">운동</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" name="interest" value="hiking" id="hiking">
+                    <label for="hiking">등산</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" name="interest" value="fishing" id="fishing">
+                    <label for="fishing">낚시</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" name="interest" value="cooking" id="cooking">
+                    <label for="cooking">요리</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" name="interest" value="gaming" id="gaming">
+                    <label for="gaming">게임</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" name="interest" value="movie" id="movie">
+                    <label for="movie">영화</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" name="interest" value="etc" id="etc">
+                    <label for="etc">기타</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <button type="submit">회원가입</button>
+            <button type="reset">다시입력</button>
+        </div>
+    </form>
+</div>
+
+<!-- jQuery CDN 반드시 body 끝에 넣기 -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script>
+    function validationCheck(){
+        const pwd = document.querySelectorAll("#enroll-form input[type=password]");
+        if(pwd[0].value !== pwd[1].value){
+            alert("비밀번호가 일치하지 않습니다.");
+            return false;
+        }
+    }
+
+    function idDulpicateCheck(){
+        const idInput = document.querySelector("#enroll-form input[name=userId]");
+        if(idInput.value.length < 5) return;
+
+        $.ajax({
+            url: "idDulpicateCheck.me",
+            type: "get",
+            data: { checkId: idInput.value },
+            success: function(result){
+                if(result === "NNNNN"){
+                    alert("이미 존재하는 ID입니다.");
+                    idInput.focus();
+                } else {
+                    if(confirm("사용 가능한 아이디입니다. 사용하시겠습니까?")){
+                        idInput.readOnly = true;
+                        document.querySelector("#enroll-form button[type=submit]").disabled = false;
+                    } else {
+                        idInput.focus();
+                    }
+                }
+            },
+            error: function(err){
+                console.log("아이디 체크 실패: ", err);
+            }
+        });
+    }
+</script>
 </body>
 </html>
