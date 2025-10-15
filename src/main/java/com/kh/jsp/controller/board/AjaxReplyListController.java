@@ -1,8 +1,9 @@
 package com.kh.jsp.controller.board;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
-import com.kh.jsp.model.vo.Member;
+import com.google.gson.Gson;
 import com.kh.jsp.model.vo.Reply;
 import com.kh.jsp.service.BoardService;
 
@@ -13,16 +14,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class AjaxReplyInsertController
+ * Servlet implementation class AjaxReplyListController
  */
-@WebServlet("/rinsert.bo")
-public class AjaxReplyInsertController extends HttpServlet {
+@WebServlet("/rlist.bo")
+public class AjaxReplyListController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public AjaxReplyInsertController() {
+    public AjaxReplyListController() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -31,18 +32,26 @@ public class AjaxReplyInsertController extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//보내준 정보를 받아서 Reply 저장 -> int 그대로 반환
+		//댓글목록을 DB에서 추출한다음 응답
 		int boardNo = Integer.parseInt(request.getParameter("boardNo"));
-		String replyContent = request.getParameter("content");
-		int memberNo = ((Member)(request.getSession().getAttribute("loginMember"))).getMemberNo();
 		
-		Reply r = new Reply();
-		r.setRefBoardNo(boardNo);
-		r.setReplyContent(replyContent);
-		r.setReplyWriter(memberNo);
+		ArrayList<Reply> list = new BoardService().selectReplyByBoardNo(boardNo);
 		
-		int result = new BoardService().insertReply(r);
-		response.getWriter().print(result);
+//		String res = "{result : [";
+//		for(Reply r : list) {
+//			res += ("{" + "replyNo : " + r.getReplyNo() + ","
+//					+ "replyContent : \"" + r.getReplyContent() + "\""
+//					+ "}");
+//		}
+//		
+//		res += "]}";
+//		System.out.println(list);
+//		
+//		response.setContentType("application/json; charset=UTF-8");
+//		response.getWriter().print(res);
+		
+		response.setContentType("application/json; charset=UTF-8");
+		new Gson().toJson(list, response.getWriter());
 	}
 
 	/**

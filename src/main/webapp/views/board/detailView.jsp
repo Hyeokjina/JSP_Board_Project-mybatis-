@@ -121,7 +121,7 @@
 		}
 	</style>
 </head>
-<body>
+<body onload="init(${board.boardNo})">
 	<jsp:include page="/views/common/menubar.jsp" />
 
 	<div class="board-container">
@@ -201,7 +201,7 @@
 						</c:choose>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody id="reply-container">
 					<!-- 댓글 목록이 여기에 동적으로 추가됩니다 -->
 				</tbody>
 			</table>
@@ -209,6 +209,74 @@
 	</div>
 	
 	<script>
+	//콜백 함수 
+	//- 다른 함수의 인자로 전달되어 나중에 호출되는 함수
+	//- 내가 직접 실행하지않고 특정 시점에 다른 함수가 실행해주는 함수
+	//- 비동기 코드에서 많이 사용한다. 예를들면 $.ajax에 전달하는 success와 error에 대한 함수도 콜백함수.
+	//- 함수의 동작을 외부에서 결정할 수 있어서 코드를 깔끔하게 분리할 수 있다.
+	function init(bno){
+		getReplyList(bno, drawReplyList);
+	}
+		
+	//서버로부터 댓글목록 가져와서 전달
+	 function getReplyList(bno, callback){
+		 $.ajax({
+			 url: "rlist.bo",
+			 //contextType: "application/json" //요청데이터 타입
+			 dataType: "json", //응답 데이터 타입(json, text, html, xml...)
+			 data: {
+				boardNo : bno
+			 },
+			 success: function(res){
+				 callback(res);
+			 },
+			 error: function(err){
+				console.log("댓글 로드 ajax 실패");
+			 }
+		 })
+	 }
+	 
+	 function drawReplyList(replyList){
+		const replyContainer = document.querySelector("#reply-container");
+
+		//내부에 이미 그려진 dom을 제거
+		replyContainer.innerHTML = "";
+
+		for(let r of replyList){
+			const replyRow = document.createElement("tr");
+			replyRow.innerHTML = "<td>" + r.memberId + "</td>" +
+								 "<td class='text-start'>" + 
+									r.replyContent +
+									"<div class='small text-secondary mt-1'>" + r.createDate + "</div>" +
+								 "</td>" + 
+								 "<td><button class='btn btn-outline-danger btn-sm'>삭제</button></td>";
+			
+			let deleteBtn = replyRow.querySelector("button");
+			deleteBtn.addEventListener("click", function(){
+				deleteReply(r.replyNo, function(){
+					console.log("삭제 성공");
+				});
+			});
+
+			replyContainer.appendChild(replyRow);
+		}
+	 }
+
+	 function deleteReply(replyNo, callback){
+		 $.ajax({
+			 url: "rdelete.bo",
+			 data: {
+				replyNo : replyNo, 
+			 },
+			 success: function(res){
+				 callback();
+			 },
+			 error: function(err){
+				console.log("댓글 삭제 ajax 실패");
+			 }
+		 })
+	 }
+	
 	 function insertReply(bno){
 		const contentInput = document.querySelector("#reply-content");
 
@@ -216,11 +284,13 @@
 			 url: "rinsert.bo",
 			 type: "post",
 			 data: {
-				boardNo : bno,
+				boardNo : bno, 
 				content: contentInput.value
 			 },
 			 success: function(res){
-				console.log("응답 : ", res);
+				 if(res === "1") {
+				 	getReplyList(bno, drawReplyList);
+				 }
 			 },
 			 error: function(err){
 				console.log("댓글 작성 ajax 실패");
