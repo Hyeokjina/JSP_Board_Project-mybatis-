@@ -13,7 +13,6 @@ import com.kh.jsp.model.dao.BoardDao;
 import com.kh.jsp.model.vo.Attachment;
 import com.kh.jsp.model.vo.Board;
 import com.kh.jsp.model.vo.Category;
-import com.kh.jsp.model.vo.Reply;
 
 public class BoardService {
 	
@@ -124,30 +123,5 @@ public class BoardService {
 		close(conn);
 		return result;
 	}
-	
-	public int insertReply(Reply r) {
-		Connection conn = getConnection();
-		
-		int result = new BoardDao().insertReply(conn, r);
-		
-		if(result > 0) {
-			commit(conn);
-		} else {
-			rollback(conn);
-		}
-		
-		close(conn);
-		return result;
-	}
-	
-	public ArrayList<Reply> selectReplyByBoardNo(int boardNo){
-		Connection conn = getConnection();
-		
-		ArrayList<Reply> list = new BoardDao().selectReplyByBoardNo(conn, boardNo);
-		
-		close(conn);
-		return list;
-	}
-	
 
 }

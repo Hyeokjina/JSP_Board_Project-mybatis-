@@ -16,7 +16,6 @@ import com.kh.jsp.common.vo.PageInfo;
 import com.kh.jsp.model.vo.Attachment;
 import com.kh.jsp.model.vo.Board;
 import com.kh.jsp.model.vo.Category;
-import com.kh.jsp.model.vo.Reply;
 
 public class BoardDao {
 	private Properties prop = new Properties();
@@ -134,39 +133,6 @@ public class BoardDao {
 		}
 		
 		return b;
-	}
-	
-	public ArrayList<Reply> selectReplyByBoardNo(Connection conn, int boardNo){
-		//select -> ResultSet(여러개) -> List<Reply>
-		ArrayList<Reply> list = new ArrayList<>();
-		
-		PreparedStatement pstmt = null;
-		ResultSet rset = null;
-		
-		String sql = prop.getProperty("selectReplyByBoardNo");
-		
-		try {
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, boardNo);
-			rset = pstmt.executeQuery();
-			
-			while(rset.next()) {
-				Reply r = new Reply();
-				r.setReplyNo(rset.getInt("REPLY_NO"));
-				r.setReplyContent(rset.getString("REPLY_CONTENT"));
-				r.setMemberId(rset.getString("MEMBER_ID"));
-				r.setCreateDate(rset.getString("CREATE_DATE"));
-				
-				list.add(r);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			close(rset);
-			close(pstmt);
-		}
-		
-		return list;
 	}
 	
 	public int selectAllBoardCount(Connection conn) {
@@ -300,32 +266,6 @@ public class BoardDao {
 			pstmt.setString(2, board.getBoardTitle());
 			pstmt.setString(3, board.getBoardContent());
 			pstmt.setInt(4, board.getBoardWriter());
-			
-			result = pstmt.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			close(pstmt);
-		}
-		
-		return result;
-	}
-	
-	public int insertReply(Connection conn, Reply r) {
-		//새로운 Reply -> insert -> int(1 또는 0)
-		
-		int result = 0;
-		
-		PreparedStatement pstmt = null;
-		String sql = prop.getProperty("insertReply");		
-		
-		
-		try {
-			pstmt = conn.prepareStatement(sql);
-
-			pstmt.setString(1,r.getReplyContent());
-			pstmt.setInt(2, r.getRefBoardNo());
-			pstmt.setInt(3, r.getReplyWriter());
 			
 			result = pstmt.executeUpdate();
 		} catch (SQLException e) {
