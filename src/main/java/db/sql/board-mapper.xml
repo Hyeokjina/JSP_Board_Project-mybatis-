@@ -40,7 +40,7 @@
 				MEMBER_ID,
 				TO_CHAR(CREATE_DATE, 'YYYY-MM-DD') AS "CREATE_DATE"
 		FROM BOARD B
-		JOIN CATEGORY USING(CATEGORY_NO)
+		LEFT JOIN CATEGORY USING(CATEGORY_NO)
 		JOIN MEMBER M ON(BOARD_WRITER = MEMBER_NO)
 		WHERE B.STATUS = 'Y'
 		AND BOARD_NO = ?
@@ -69,7 +69,7 @@
 			BOARD_WRITER
 		) VALUES(
 			SEQ_BNO.NEXTVAL,
-			1,
+			?,
 			?,
 			?,
 			?,
@@ -87,6 +87,24 @@
 		) VALUES(
 			SEQ_FNO.NEXTVAL,
 			SEQ_BNO.CURRVAL,
+			?,
+			?,
+			?
+		)
+	</entry>
+	<entry key="insertThumbnailAttachment">
+		INSERT
+		INTO ATTACHMENT(
+			FILE_NO,
+			REF_BNO,
+			ORIGIN_NAME,
+			CHANGE_NAME,
+			FILE_PATH,
+			FILE_LEVEL
+		) VALUES(
+			SEQ_FNO.NEXTVAL,
+			SEQ_BNO.CURRVAL,
+			?,
 			?,
 			?,
 			?
@@ -119,7 +137,8 @@
 		SELECT FILE_NO,
 				ORIGIN_NAME,
 				CHANGE_NAME,
-				FILE_PATH
+				FILE_PATH,
+				FILE_LEVEL
 		  FROM ATTACHMENT
 		 WHERE REF_BNO = ?
 	</entry>	
@@ -137,6 +156,11 @@
 			?
 		)
 	</entry>
+	<entry key="deleteReply">
+		DELETE 
+		FROM REPLY
+		WHERE REPLY_NO = ?
+	</entry>
 	<entry key="selectReplyByBoardNo">
 		SELECT REPLY_NO,
 				REPLY_CONTENT,
@@ -147,5 +171,17 @@
 		 WHERE R.STATUS = 'Y'
 		   AND REF_BNO = ?
 		 ORDER BY REPLY_NO DESC
+	</entry>
+	<entry key="selectThumbnailList">
+		SELECT  BOARD_NO, 
+                BOARD_TITLE,
+                COUNT,
+           		FILE_PATH || CHANGE_NAME AS "THUMBNAIL_IMG"
+        FROM BOARD B
+        JOIN ATTACHMENT A ON(BOARD_NO = REF_BNO)
+        WHERE B.STATUS = 'Y'
+          AND BOARD_TYPE = 2
+          AND FILE_LEVEL = 1
+        ORDER BY BOARD_NO DESC
 	</entry>
 </properties>

@@ -25,5 +25,6 @@ public class Board {
 	//데이터 전달용 필드
 	private String categoryName;
 	private String memberId;
+	private String thumbnailImg;
 	
 }

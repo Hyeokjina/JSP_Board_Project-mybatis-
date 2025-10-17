@@ -78,6 +78,39 @@ public class BoardDao {
 		return list;
 	}
 	
+	public ArrayList<Board> selectThumnailList(Connection conn){
+		//select -> ResultSet(여러개) -> ArrayList
+		ArrayList<Board> list = new ArrayList<>();
+		
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String sql = prop.getProperty("selectThumbnailList");
+		
+		try {
+
+			pstmt = conn.prepareStatement(sql);
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Board b = new Board();
+				b.setBoardNo(rset.getInt("BOARD_NO"));
+				b.setBoardTitle(rset.getString("BOARD_TITLE"));
+				b.setCount(rset.getInt("COUNT"));
+				b.setThumbnailImg(rset.getString("THUMBNAIL_IMG"));
+				
+				list.add(b);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rset);
+			close(pstmt);
+		}
+		
+		return list;
+	}
+	
 	public int increaseCount(Connection conn, int boardNo) {
 		//boardNo에 해당하는 board -> update -> int(1 또는 0)
 		
@@ -91,6 +124,29 @@ public class BoardDao {
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, boardNo);
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(pstmt);
+		}
+		
+		return result;
+	}
+	
+	public int deleteReply(Connection conn, int replyNo) {
+		//replyNo에 해당하는 reply -> delete -> int(1 또는 0)
+		
+		int result = 0;
+		
+		PreparedStatement pstmt = null;
+		String sql = prop.getProperty("deleteReply");		
+		
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, replyNo);
 			
 			result = pstmt.executeUpdate();
 		} catch (SQLException e) {
@@ -119,7 +175,7 @@ public class BoardDao {
 			if(rset.next()) {
 				b = new Board();
 				b.setBoardNo(rset.getInt("BOARD_NO"));
-				b.setCategoryNo(rset.getInt("CATEGORY_No"));
+				b.setCategoryNo(rset.getInt("CATEGORY_NO"));
 				b.setCategoryName(rset.getString("CATEGORY_NAME"));
 				b.setBoardTitle(rset.getString("BOARD_TITLE"));
 				b.setBoardContent(rset.getString("BOARD_CONTENT"));
@@ -226,6 +282,40 @@ public class BoardDao {
 		return at;
 	}
 	
+	public ArrayList<Attachment> selectAttachmentList(Connection conn, int boardNo){
+		//select -> ResultSet(한개 또는 여러개) -> Board
+		ArrayList<Attachment> list = new ArrayList<>();
+		
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String sql = prop.getProperty("selectAttachment");
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, boardNo);
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				Attachment at = new Attachment();
+				at.setFileNo(rset.getInt("FILE_NO"));
+				at.setOriginName(rset.getString("ORIGIN_NAME"));
+				at.setChangeName(rset.getString("CHANGE_NAME"));
+				at.setFilePath(rset.getString("FILE_PATH"));
+				at.setFileLevel(rset.getInt("FILE_LEVEL"));
+				
+				list.add(at);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rset);
+			close(pstmt);
+		}
+		
+		return list;
+	}
+	
 	public ArrayList<Category> selectAllCategory(Connection conn){
 		//select -> ResultSet(여러개) -> ArrayList
 		ArrayList<Category> list = new ArrayList<>();
@@ -290,16 +380,23 @@ public class BoardDao {
 		int result = 0;
 		
 		PreparedStatement pstmt = null;
-		
+	
 		String sql = prop.getProperty("insertBoard");		
 		
 		
 		try {
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, board.getCategoryNo());
-			pstmt.setString(2, board.getBoardTitle());
-			pstmt.setString(3, board.getBoardContent());
-			pstmt.setInt(4, board.getBoardWriter());
+			pstmt.setInt(1, board.getBoardType());
+			
+			if(board.getBoardType() == 1) {
+				pstmt.setInt(2, board.getCategoryNo());
+			} else {
+				pstmt.setNull(2, java.sql.Types.NUMERIC);;
+			}
+			
+			pstmt.setString(3, board.getBoardTitle());
+			pstmt.setString(4, board.getBoardContent());
+			pstmt.setInt(5, board.getBoardWriter());
 			
 			result = pstmt.executeUpdate();
 		} catch (SQLException e) {
@@ -355,6 +452,35 @@ public class BoardDao {
 			pstmt.setString(3, at.getFilePath());
 			
 			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(pstmt);
+		}
+		
+		return result;
+	}
+	
+	public int insertAttachment(Connection conn, ArrayList<Attachment> list) {
+		//새로운 Attachment -> insert -> int(1 또는 0)
+		
+		int result = 1;
+		PreparedStatement pstmt = null;
+		
+		String sql = prop.getProperty("insertThumbnailAttachment");		
+		
+		
+		try {
+			for(Attachment at : list) {
+				pstmt = conn.prepareStatement(sql);
+				
+				pstmt.setString(1, at.getOriginName());
+				pstmt.setString(2, at.getChangeName());
+				pstmt.setString(3, at.getFilePath());
+				pstmt.setInt(4, at.getFileLevel());
+				
+				result *= pstmt.executeUpdate();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {

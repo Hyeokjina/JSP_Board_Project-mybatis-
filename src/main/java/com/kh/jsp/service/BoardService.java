@@ -35,6 +35,29 @@ public class BoardService {
 		return list;
 	}
 	
+	public ArrayList<Board> selectThumnailList(){
+		Connection conn = getConnection();
+		
+		ArrayList<Board> list = new BoardDao().selectThumnailList(conn);
+		close(conn);
+		
+		return list;
+	}
+	
+	public int deleteReply(int replyNo){
+		Connection conn = getConnection();
+		
+		int result = new BoardDao().deleteReply(conn, replyNo);
+		if(result > 0) {
+			commit(conn);
+		} else {
+			rollback(conn);
+		}
+		
+		close(conn);
+		return result;
+	}
+	
 	public int increaseCount(int boardNo) {
 		Connection conn = getConnection();
 		
@@ -65,6 +88,15 @@ public class BoardService {
 		
 		close(conn);
 		return at;
+	}
+	
+	public ArrayList<Attachment> selectAttachmentList(int boardNo) {
+		Connection conn = getConnection();
+		
+		ArrayList<Attachment> list = new BoardDao().selectAttachmentList(conn, boardNo);
+		
+		close(conn);
+		return list;
 	}
 	
 	public ArrayList<Category> selectAllCategory() {
@@ -109,11 +141,31 @@ public class BoardService {
 		
 		BoardDao bDao = new BoardDao();
 		
+		b.setBoardType(1);
 		int result = bDao.insertBoard(conn, b);
 		
 		if(at != null) {
 			result *= bDao.insertAttachment(conn, at);
 		}
+		
+		if(result > 0) {
+			commit(conn);
+		} else {
+			rollback(conn);
+		}
+		
+		close(conn);
+		return result;
+	}
+	
+	public int insertBoard(Board b, ArrayList<Attachment> list) {
+		Connection conn = getConnection();
+		
+		BoardDao bDao = new BoardDao();
+		
+		b.setBoardType(2);
+		int result = bDao.insertBoard(conn, b);
+		result *= bDao.insertAttachment(conn, list);
 		
 		if(result > 0) {
 			commit(conn);
