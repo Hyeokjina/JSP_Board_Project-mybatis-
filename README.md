@@ -1,7 +1,7 @@
 # JSP Board Project - MyBatis Rebuild
 
 ## 🧩 개요
-기존 JDBC를 사용한 JSP 기반 게시판 프로젝트(https://github.com/Hyeokjina/JSP_Board_Project)를 **MyBatis 프레임워크**를 적용하여 재구성한 프로젝트입니다.  
+기존 JDBC를 사용한 JSP 기반 게시판 프로젝트(https://github.com/Hyeokjina/JSP_Board_Project) 를 **MyBatis 프레임워크**를 적용하여 재구성한 프로젝트입니다.  
 MyBatis를 적용함으로써 **코드의 가독성**, **유지보수성**, **SQL 관리 효율성**을 크게 향상시켰습니다.
 
 ---
