@@ -3,7 +3,7 @@
 ## 🧩 개요
 기존 JDBC를 사용한 JSP 기반 게시판 프로젝트를 **MyBatis 프레임워크**를 적용하여 재구성한 프로젝트입니다.  
 MyBatis를 적용함으로써 **코드의 가독성**, **유지보수성**, **SQL 관리 효율성**을 크게 향상시켰습니다.
-[프로젝트 깃허브 바로가기](https://github.com/Hyeokjina/JSP_Board_Project)
+(https://github.com/Hyeokjina/JSP_Board_Project)
 ---
 
 ## ⚙️ MyBatis란?
