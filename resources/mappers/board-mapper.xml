@@ -5,11 +5,35 @@
   
   <mapper namespace="BoardMapper">
   	<resultMap id="boardResultMap" type="Board">
-  	<result column="BOARD_NO" property="categoryName"/>
-  	<result column="BOARD_TITLE" property="boardTitle"/>
-  	<result column="COUNT" property="count"/>
-  	<result column="CREATE_DATE" property="createDate"/>
+  	<result column="BOARD_NO" property="boardNo"/>
+    <result column="BOARD_TYPE" property="boardType"/>
+    <result column="CATEGORY_NO" property="categoryNo"/>
+    <result column="BOARD_TITLE" property="boardTitle"/>
+    <result column="BOARD_CONTENT" property="boardContent"/>
+    <result column="BOARD_WRITER" property="boardWriter"/>
+    <result column="COUNT" property="count"/>
+    <result column="CREATE_DATE" property="createDate"/>
+    <result column="STATUS" property="status"/>
+    <result column="CATEGORY_NAME" property="categoryName"/>
+    <result column="MEMBER_ID" property="memberId"/>
+    <result column="THUMBNAIL_IMG" property="thumbnailImg"/>
   	</resultMap>
+  	
+  	<resultMap id="categoryResultMap" type="Category">
+  	<result column="CATEGORY_NO" property="categoryName"/>
+  	<result column="CATEGORY_NAME" property="boardTitle"/>
+  	</resultMap>
+  	
+  	<resultMap id="attachmentResultMap" type="Attachment">
+    <result column="FILE_NO" property="fileNo"/>
+    <result column="REF_BNO" property="refBoardNo"/>
+    <result column="ORIGIN_NAME" property="originName"/>
+    <result column="CHANGE_NAME" property="changeName"/>
+    <result column="FILE_PATH" property="filePath"/>
+    <result column="UPLOAD_DATE" property="uploadDate"/>
+    <result column="FILE_LEVEL" property="fileLevel"/>
+    <result column="STATUS" property="status"/>
+	</resultMap>
   
   	<select id="selectAllBoardCount" resultType="_int">
   		SELECT COUNT(*) AS COUNT
@@ -31,5 +55,48 @@
         WHERE B.STATUS = 'Y'
         AND BOARD_TYPE = 1
         ORDER BY BOARD_NO DESC
+  	</select>
+  	
+  	<select id="selectAllCategory"  resultMap="boardResultMap">
+  		SELECT CATEGORY_NO,
+				CATEGORY_NAME
+		FROM CATEGORY
+  	</select>
+  	
+  	<select id="insertBoard"  resultMap="boardResultMap">
+  		INSERT
+		INTO BOARD(
+			BOARD_NO,
+			BOARD_TYPE,
+			CATEGORY_NO,
+			BOARD_TITLE,
+			BOARD_CONTENT,
+			BOARD_WRITER
+		) VALUES(
+			SEQ_BNO.NEXTVAL,
+	        #{boardType},
+	        #{categoryNo},
+	        #{boardTitle},
+	        #{boardContent},
+	        #{boardWriter},
+	        'Y'
+		)
+  	</select>
+  	
+  	<select id="insertAttachment"  resultMap="attachmentResultMap">
+  		INSERT
+		INTO ATTACHMENT(
+			FILE_NO,
+			REF_BNO,
+			ORIGIN_NAME,
+			CHANGE_NAME,
+			FILE_PATH
+		) VALUES(
+			SEQ_FNO.NEXTVAL,
+			#{boardNo},
+	        #{originName},
+	        #{changeName},
+	        #{filePath}
+		)
   	</select>
   	</mapper>

@@ -13,6 +13,8 @@
 	<typeAliases>
 		<typeAlias type="com.kh.mybatis.model.vo.Member" alias="Member"/>
 		<typeAlias type="com.kh.mybatis.model.vo.Board" alias="Board"/>
+		<typeAlias type="com.kh.mybatis.model.vo.Category" alias="Category"/>
+		<typeAlias type="com.kh.mybatis.model.vo.Attachment" alias="Attachment"/>
 	</typeAliases>
 	
 	<!-- environments : mybatis실행시 연결할 디비정보 -->
