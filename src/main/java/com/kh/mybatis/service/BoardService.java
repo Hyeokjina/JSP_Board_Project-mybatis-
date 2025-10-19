@@ -59,6 +59,7 @@ public class BoardService {
 
 		        // 첨부파일이 있으면 등록
 		        if(at != null) {
+		        	at.setRefBoardNo(b.getBoardNo());
 		            result *= boardDao.insertAttachment(sqlSession, at);
 		        }
 
