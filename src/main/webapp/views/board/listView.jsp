@@ -31,6 +31,20 @@
             border-bottom: 2px solid #4b89fc;
         }
 
+        #search-area{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        #search-area form{
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+        }
+
         .write-btn-area {
             text-align: right;
             margin-bottom: 1rem;
@@ -79,6 +93,7 @@
         .pagination .btn {
             min-width: 40px;
         }
+
     </style>
 </head>
 <body>
@@ -93,6 +108,19 @@
 	                <a class="btn btn-primary" href="${pageContext.request.contextPath}/enrollForm.bo">글쓰기</a>
 	            </div>
             </c:if>
+
+            <div id="search-area">
+                <form action="${pageContext.request.contextPath}/search.bo">
+                    <select name="condition" id="">
+                        <option value="writer" ${condition == 'writer' ? 'selected' : '' }>작성자</option>
+                        <option value="title" ${condition == 'title' ? 'selected' : '' }>제목</option>
+                        <option value="content" ${condition == 'content' ? 'selected' : '' }>내용</option>
+                    </select>
+                    <input type="text" name="keyword" placeholder="검색어를 입력하세요.." value="${keyword}">
+                    <button type="submit" class="btn btn-primary btn-sm">검색</button>
+                </form>
+
+            </div>
 
             <table class="board-table">
                 <thead>

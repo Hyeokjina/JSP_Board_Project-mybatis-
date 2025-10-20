@@ -2,6 +2,7 @@ package com.kh.mybatis.service;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.ibatis.session.SqlSession;
 
@@ -27,10 +28,31 @@ public class BoardService {
 		return listCount;
 	}
 	
+	public int selectAllBoardCount(HashMap<String, String> searchMap) {
+		SqlSession sqlSession = Template.getSqlSession();
+		
+		int listCount = boardDao.selectAllBoardCount(sqlSession, searchMap);
+		
+		sqlSession.close();
+		
+		return listCount;
+	}
+	
+	
 	public ArrayList<Board> selectAllBoard(PageInfo pi) {
 		SqlSession sqlSession = Template.getSqlSession();
 		
 		ArrayList<Board> list = boardDao.selectAllBoard(sqlSession, pi);
+		
+		sqlSession.close();
+		
+		return list;
+	}
+	
+	public ArrayList<Board> selectAllBoard(PageInfo pi, HashMap<String, String> searchMap ) {
+		SqlSession sqlSession = Template.getSqlSession();
+		
+		ArrayList<Board> list = boardDao.selectAllBoard(sqlSession, pi, searchMap);
 		
 		sqlSession.close();
 		

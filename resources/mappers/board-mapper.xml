@@ -37,10 +37,29 @@
   
   	<select id="selectAllBoardCount" resultType="_int">
   		SELECT COUNT(*) AS COUNT
-		FROM BOARD
-		WHERE BOARD_TYPE = 1
+		FROM BOARD B
+		WHERE B.BOARD_TYPE = 1
 		  AND STATUS = 'Y'
   	</select>
+  	
+  	<select id="searchBoardCount" resultType="_int">
+		SELECT COUNT(*)
+		 FROM BOARD B
+		 JOIN MEMBER M ON(BOARD_WRITER = MEMBER_NO)
+		 WHERE B.STATUS = 'Y'
+		 <choose>
+		 	<when test="condition == 'writer'">
+		 		AND MEMBER_ID
+		 	</when>
+		 	<when test="condition == 'title'">
+		 		AND BOARD_TITLE
+		 	</when>
+		 	<otherwise>
+		 		AND BOARD_CONTENT
+		 	</otherwise>
+		 </choose>
+		  LIKE '%${keyword}%'
+	</select>
   	
   	<select id="selectAllBoard" resultMap="boardResultMap">
 	  	SELECT  BOARD_NO, 
@@ -54,14 +73,35 @@
         JOIN MEMBER M ON(BOARD_WRITER = MEMBER_NO)
         WHERE B.STATUS = 'Y'
         AND BOARD_TYPE = 1
+        
         ORDER BY BOARD_NO DESC
   	</select>
   	
-  	<select id="selectAllCategory"  resultMap="boardResultMap">
-  		SELECT CATEGORY_NO,
-				CATEGORY_NAME
-		FROM CATEGORY
-  	</select>
+  	<select id="selectSearchBoard" resultMap="boardResultMap" parameterType="hashmap">
+	    SELECT B.BOARD_NO,
+	           C.CATEGORY_NAME,
+	           B.BOARD_TITLE,
+	           M.MEMBER_ID,
+	           B.COUNT,
+	           TO_CHAR(B.CREATE_DATE, 'YYYY-MM-DD') AS CREATE_DATE
+	    FROM BOARD B
+	    JOIN CATEGORY C ON B.CATEGORY_NO = C.CATEGORY_NO
+	    JOIN MEMBER M ON B.BOARD_WRITER = M.MEMBER_NO
+	    WHERE B.STATUS = 'Y'
+	      AND B.BOARD_TYPE = 1
+	    <choose>
+	        <when test="condition == 'writer'">
+	            AND M.MEMBER_ID LIKE '%' || #{keyword} || '%'
+	        </when>
+	        <when test="condition == 'title'">
+	            AND B.BOARD_TITLE LIKE '%' || #{keyword} || '%'
+	        </when>
+	        <otherwise>
+	            AND B.BOARD_CONTENT LIKE '%' || #{keyword} || '%'
+	        </otherwise>
+	    </choose>
+	    ORDER BY B.BOARD_NO DESC
+	</select>
   	
   	<select id="insertBoard"  resultMap="boardResultMap">
   		INSERT
@@ -71,7 +111,8 @@
 			CATEGORY_NO,
 			BOARD_TITLE,
 			BOARD_CONTENT,
-			BOARD_WRITER
+			BOARD_WRITER,
+			STATUS
 		) VALUES(
 			SEQ_BNO.NEXTVAL,
 	        #{boardType},
