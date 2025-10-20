@@ -2,142 +2,156 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-  
-  <mapper namespace="BoardMapper">
-  	<resultMap id="boardResultMap" type="Board">
-  	<result column="BOARD_NO" property="boardNo"/>
-    <result column="BOARD_TYPE" property="boardType"/>
-    <result column="CATEGORY_NO" property="categoryNo"/>
-    <result column="BOARD_TITLE" property="boardTitle"/>
-    <result column="BOARD_CONTENT" property="boardContent"/>
-    <result column="BOARD_WRITER" property="boardWriter"/>
-    <result column="COUNT" property="count"/>
-    <result column="CREATE_DATE" property="createDate"/>
-    <result column="STATUS" property="status"/>
-    <result column="CATEGORY_NAME" property="categoryName"/>
-    <result column="MEMBER_ID" property="memberId"/>
-    <result column="THUMBNAIL_IMG" property="thumbnailImg"/>
-  	</resultMap>
-  	
-  	<resultMap id="categoryResultMap" type="Category">
-  	<result column="CATEGORY_NO" property="categoryName"/>
-  	<result column="CATEGORY_NAME" property="boardTitle"/>
-  	</resultMap>
-  	
-  	<resultMap id="attachmentResultMap" type="Attachment">
-    <result column="FILE_NO" property="fileNo"/>
-    <result column="REF_BNO" property="refBoardNo"/>
-    <result column="ORIGIN_NAME" property="originName"/>
-    <result column="CHANGE_NAME" property="changeName"/>
-    <result column="FILE_PATH" property="filePath"/>
-    <result column="UPLOAD_DATE" property="uploadDate"/>
-    <result column="FILE_LEVEL" property="fileLevel"/>
-    <result column="STATUS" property="status"/>
-	</resultMap>
-  
-  	<select id="selectAllBoardCount" resultType="_int">
-  		SELECT COUNT(*) AS COUNT
-		FROM BOARD B
-		WHERE B.BOARD_TYPE = 1
-		  AND STATUS = 'Y'
-  	</select>
-  	
-  	<select id="searchBoardCount" resultType="_int">
-		SELECT COUNT(*)
-		 FROM BOARD B
-		 JOIN MEMBER M ON(BOARD_WRITER = MEMBER_NO)
-		 WHERE B.STATUS = 'Y'
-		 <choose>
-		 	<when test="condition == 'writer'">
-		 		AND MEMBER_ID
-		 	</when>
-		 	<when test="condition == 'title'">
-		 		AND BOARD_TITLE
-		 	</when>
-		 	<otherwise>
-		 		AND BOARD_CONTENT
-		 	</otherwise>
-		 </choose>
-		  LIKE '%${keyword}%'
-	</select>
-  	
-  	<select id="selectAllBoard" resultMap="boardResultMap">
-	  	SELECT  BOARD_NO, 
-                CATEGORY_NAME,
-                BOARD_TITLE,
-                MEMBER_ID,
-                COUNT,
-                TO_CHAR(CREATE_DATE, 'YYYY-MM-DD') AS "CREATE_DATE"
+
+<mapper namespace="BoardMapper">
+
+    <!-- Board 객체 맵핑 -->
+    <resultMap id="boardResultMap" type="Board">
+        <result column="BOARD_NO" property="boardNo"/>
+        <result column="BOARD_TYPE" property="boardType"/>
+        <result column="CATEGORY_NO" property="categoryNo"/>
+        <result column="BOARD_TITLE" property="boardTitle"/>
+        <result column="BOARD_CONTENT" property="boardContent"/>
+        <result column="BOARD_WRITER" property="boardWriter"/>
+        <result column="COUNT" property="count"/>
+        <result column="CREATE_DATE" property="createDate"/>
+        <result column="STATUS" property="status"/>
+        <result column="CATEGORY_NAME" property="categoryName"/>
+        <result column="MEMBER_ID" property="memberId"/>
+        <result column="THUMBNAIL_IMG" property="thumbnailImg"/>
+    </resultMap>
+
+    <!-- Category 객체 맵핑 -->
+    <resultMap id="categoryResultMap" type="Category">
+        <result column="CATEGORY_NO" property="categoryNo"/>
+        <result column="CATEGORY_NAME" property="categoryName"/>
+    </resultMap>
+
+    <!-- Attachment 객체 맵핑 -->
+    <resultMap id="attachmentResultMap" type="Attachment">
+        <result column="FILE_NO" property="fileNo"/>
+        <result column="REF_BNO" property="refBoardNo"/>
+        <result column="ORIGIN_NAME" property="originName"/>
+        <result column="CHANGE_NAME" property="changeName"/>
+        <result column="FILE_PATH" property="filePath"/>
+        <result column="UPLOAD_DATE" property="uploadDate"/>
+        <result column="FILE_LEVEL" property="fileLevel"/>
+        <result column="STATUS" property="status"/>
+    </resultMap>
+
+    <!-- 전체 게시글 수 조회 -->
+    <select id="selectAllBoardCount" resultType="_int">
+        SELECT COUNT(*) AS COUNT
         FROM BOARD B
-        JOIN CATEGORY USING(CATEGORY_NO)
-        JOIN MEMBER M ON(BOARD_WRITER = MEMBER_NO)
+        WHERE B.BOARD_TYPE = 1
+          AND STATUS = 'Y'
+    </select>
+
+    <!-- 검색 게시글 수 조회 -->
+    <select id="searchBoardCount" resultType="_int" parameterType="hashmap">
+        SELECT COUNT(*)
+        FROM BOARD B
+        JOIN MEMBER M ON (BOARD_WRITER = MEMBER_NO)
         WHERE B.STATUS = 'Y'
-        AND BOARD_TYPE = 1
-        
-        ORDER BY BOARD_NO DESC
-  	</select>
-  	
-  	<select id="selectSearchBoard" resultMap="boardResultMap" parameterType="hashmap">
-	    SELECT B.BOARD_NO,
-	           C.CATEGORY_NAME,
-	           B.BOARD_TITLE,
-	           M.MEMBER_ID,
-	           B.COUNT,
-	           TO_CHAR(B.CREATE_DATE, 'YYYY-MM-DD') AS CREATE_DATE
-	    FROM BOARD B
-	    JOIN CATEGORY C ON B.CATEGORY_NO = C.CATEGORY_NO
-	    JOIN MEMBER M ON B.BOARD_WRITER = M.MEMBER_NO
-	    WHERE B.STATUS = 'Y'
-	      AND B.BOARD_TYPE = 1
-	    <choose>
-	        <when test="condition == 'writer'">
-	            AND M.MEMBER_ID LIKE '%' || #{keyword} || '%'
-	        </when>
-	        <when test="condition == 'title'">
-	            AND B.BOARD_TITLE LIKE '%' || #{keyword} || '%'
-	        </when>
-	        <otherwise>
-	            AND B.BOARD_CONTENT LIKE '%' || #{keyword} || '%'
-	        </otherwise>
-	    </choose>
-	    ORDER BY B.BOARD_NO DESC
-	</select>
-  	
-  	<select id="insertBoard"  resultMap="boardResultMap">
-  		INSERT
-		INTO BOARD(
-			BOARD_NO,
-			BOARD_TYPE,
-			CATEGORY_NO,
-			BOARD_TITLE,
-			BOARD_CONTENT,
-			BOARD_WRITER,
-			STATUS
-		) VALUES(
-			SEQ_BNO.NEXTVAL,
-	        #{boardType},
-	        #{categoryNo},
-	        #{boardTitle},
-	        #{boardContent},
-	        #{boardWriter},
-	        'Y'
-		)
-  	</select>
-  	
-  	<select id="insertAttachment"  resultMap="attachmentResultMap">
-  		INSERT
-		INTO ATTACHMENT(
-			FILE_NO,
-			REF_BNO,
-			ORIGIN_NAME,
-			CHANGE_NAME,
-			FILE_PATH
-		) VALUES(
-			SEQ_FNO.NEXTVAL,
-			#{boardNo},
-	        #{originName},
-	        #{changeName},
-	        #{filePath}
-		)
-  	</select>
-  	</mapper>
+        <choose>
+            <when test="condition == 'writer'">
+                AND M.MEMBER_ID LIKE '%' || #{keyword} || '%'
+            </when>
+            <when test="condition == 'title'">
+                AND B.BOARD_TITLE LIKE '%' || #{keyword} || '%'
+            </when>
+            <otherwise>
+                AND B.BOARD_CONTENT LIKE '%' || #{keyword} || '%'
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 전체 게시글 조회 -->
+    <select id="selectAllBoard" resultMap="boardResultMap">
+        SELECT B.BOARD_NO, 
+               C.CATEGORY_NAME,
+               B.BOARD_TITLE,
+               M.MEMBER_ID,
+               B.COUNT,
+               TO_CHAR(B.CREATE_DATE, 'YYYY-MM-DD') AS "CREATE_DATE"
+        FROM BOARD B
+        JOIN CATEGORY C USING(CATEGORY_NO)
+        JOIN MEMBER M ON(B.BOARD_WRITER = M.MEMBER_NO)
+        WHERE B.STATUS = 'Y'
+          AND B.BOARD_TYPE = 1
+        ORDER BY B.BOARD_NO DESC
+    </select>
+
+    <!-- 검색 게시글 조회 -->
+    <select id="selectSearchBoard" resultMap="boardResultMap" parameterType="hashmap">
+        SELECT B.BOARD_NO,
+               C.CATEGORY_NAME,
+               B.BOARD_TITLE,
+               M.MEMBER_ID,
+               B.COUNT,
+               TO_CHAR(B.CREATE_DATE, 'YYYY-MM-DD') AS CREATE_DATE
+        FROM BOARD B
+        JOIN CATEGORY C ON B.CATEGORY_NO = C.CATEGORY_NO
+        JOIN MEMBER M ON B.BOARD_WRITER = M.MEMBER_NO
+        WHERE B.STATUS = 'Y'
+          AND B.BOARD_TYPE = 1
+        <choose>
+            <when test="condition == 'writer'">
+                AND M.MEMBER_ID LIKE '%' || #{keyword} || '%'
+            </when>
+            <when test="condition == 'title'">
+                AND B.BOARD_TITLE LIKE '%' || #{keyword} || '%'
+            </when>
+            <otherwise>
+                AND B.BOARD_CONTENT LIKE '%' || #{keyword} || '%'
+            </otherwise>
+        </choose>
+        ORDER BY B.BOARD_NO DESC
+    </select>
+
+    <!-- 게시글 삽입 -->
+    <insert id="insertBoard" parameterType="Board">
+        INSERT INTO BOARD(
+            BOARD_NO,
+            BOARD_TYPE,
+            CATEGORY_NO,
+            BOARD_TITLE,
+            BOARD_CONTENT,
+            BOARD_WRITER,
+            STATUS
+        ) VALUES(
+            SEQ_BNO.NEXTVAL,
+            #{boardType},
+            #{categoryNo},
+            #{boardTitle},
+            #{boardContent},
+            #{boardWriter},
+            'Y'
+        )
+    </insert>
+
+    <!-- 첨부파일 삽입 -->
+    <insert id="insertAttachment" parameterType="Attachment">
+        INSERT INTO ATTACHMENT(
+            FILE_NO,
+            REF_BNO,
+            ORIGIN_NAME,
+            CHANGE_NAME,
+            FILE_PATH
+        ) VALUES(
+            SEQ_FNO.NEXTVAL,
+            #{boardNo},
+            #{originName},
+            #{changeName},
+            #{filePath}
+        )
+    </insert>
+
+    <!-- 전체 카테고리 조회 -->
+    <select id="selectAllCategory" resultMap="categoryResultMap">
+        SELECT CATEGORY_NO, CATEGORY_NAME
+        FROM CATEGORY
+        ORDER BY CATEGORY_NO
+    </select>
+
+</mapper>
