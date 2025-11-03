@@ -155,9 +155,5 @@ sqlSession.insert("BoardMapper.insertBoard", b);
 int newId = b.getBoardNo(); // 시퀀스로 생성된 PK
 ```
 
-> ⚠️ 주의
->
-> * MySQL은 `useGeneratedKeys` 사용 가능
-> * Oracle은 반드시 `selectKey` 사용, JDBC `getGeneratedKeys()`만 사용하면 ORA-17132 오류 발생 가능
 
 
