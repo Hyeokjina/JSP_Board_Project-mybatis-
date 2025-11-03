@@ -160,9 +160,4 @@ int newId = b.getBoardNo(); // 시퀀스로 생성된 PK
 > * MySQL은 `useGeneratedKeys` 사용 가능
 > * Oracle은 반드시 `selectKey` 사용, JDBC `getGeneratedKeys()`만 사용하면 ORA-17132 오류 발생 가능
 
----
 
-### 🔗 참고
-
-* [MyBatis 공식 문서](https://mybatis.org/mybatis-3/)
-* [Oracle ORA-17132 Error Help](https://docs.oracle.com/error-help/db/ora-17132/)
