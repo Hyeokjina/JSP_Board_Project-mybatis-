@@ -50,7 +50,7 @@
         }
 
         .navbar-nav .nav-link:hover {
-            color: #eb3e27 !important;
+            color: #ff5e00 !important;
         }
     </style>
 </head>
