@@ -172,7 +172,7 @@
 						</td>
 					</tr>
 					<tr>
-						<th>상세이미지</th>
+						<th>상세이미지 보기</th>
 						<td>
 							<div class="detail-images">
 								<div class="detail-image-preview" onclick="chooseFile('#file2')">
