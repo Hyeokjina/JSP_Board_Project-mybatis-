@@ -125,7 +125,7 @@
             <table class="board-table">
                 <thead>
                     <tr>
-                        <th width="70">글번호</th>
+                        <th width="70">No</th>
                         <th width="100">카테고리</th>
                         <th width="300">제목</th>
                         <th width="100">작성자</th>
