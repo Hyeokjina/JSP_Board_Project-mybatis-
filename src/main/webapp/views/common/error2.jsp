@@ -32,7 +32,7 @@
 				</div>
 				<h4 class="alert-heading">오류 발생</h4>
 				<p class="mb-0">
-					<c:out value="${errorMsg}" default="알 수 없는 오류가 발생하였습니다." />
+					<c:out value="${errorMsg}" default="알 수 없는 오류가 발생하였습니다. 주위하세요" />
 				</p>
 				<hr>
 				<a href="javascript:history.back()" class="btn btn-outline-danger">이전 페이지로</a>
