@@ -133,7 +133,7 @@
 				</table>
 
 				<div class="button-group">
-					<button type="submit" class="btn btn-primary">수정하기</button>
+					<button type="submit" class="btn btn-primary">수정하.</button>
 					<button type="reset" class="btn btn-secondary">취소하기</button>
 				</div>
 			</form>
