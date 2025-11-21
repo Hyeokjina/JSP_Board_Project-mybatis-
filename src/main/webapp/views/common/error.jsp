@@ -30,7 +30,7 @@
 				<div class="display-6 mb-3">
 					<i class="bi bi-exclamation-triangle-fill"></i>
 				</div>
-				<h4 class="alert-heading">오류 발생</h4>
+				<h4 class="alert-heading">오류 발생 확인</h4>
 				<p class="mb-0">
 					<c:out value="${errorMsg}" default="알 수 없는 오류가 발생하였습니다." />
 				</p>
